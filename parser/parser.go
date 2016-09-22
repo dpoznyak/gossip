@@ -74,7 +74,8 @@ func defaultHeaderParsers() map[string]HeaderParser {
 func ParseMessage(msgData []byte) (base.SipMessage, error) {
 	output := make(chan base.SipMessage, 0)
 	errors := make(chan error, 0)
-	parser := NewParser(output, errors, false)
+	exit := make(chan struct{}, 1)
+	parser := NewParser(output, errors, exit, false)
 	defer parser.Stop()
 
 	parser.Write(msgData)
@@ -100,7 +101,7 @@ func ParseMessage(msgData []byte) (base.SipMessage, error) {
 
 // 'streamed' should be set to true whenever the caller cannot reliably identify the starts and ends of messages from the transport frames,
 // e.g. when using streamed protocols such as TCP.
-func NewParser(output chan<- base.SipMessage, errs chan<- error, streamed bool) Parser {
+func NewParser(output chan<- base.SipMessage, errs chan<- error, exit chan<- struct{}, streamed bool) Parser {
 	p := parser{streamed: streamed}
 
 	// Configure the parser with the standard set of header parsers.
@@ -111,6 +112,7 @@ func NewParser(output chan<- base.SipMessage, errs chan<- error, streamed bool) 
 
 	p.output = output
 	p.errs = errs
+	p.exit = exit
 
 	if !streamed {
 		// If we're not in streaming mode, set up a channel so the Write method can pass calculated body lengths to the parser.
@@ -134,6 +136,7 @@ type parser struct {
 	bodyLengths   utils.ElasticChan
 	output        chan<- base.SipMessage
 	errs          chan<- error
+	exit          chan<- struct{}
 	terminalErr   error
 	stopped       bool
 }
@@ -169,6 +172,8 @@ func (p *parser) Stop() {
 // Consume input lines one at a time, producing base.SipMessage objects and sending them down p.output.
 func (p *parser) parse(requireContentLength bool) {
 	var message base.SipMessage
+
+	defer func() { p.exit <- struct{}{} }()
 
 	for {
 		// Parse the StartLine.
