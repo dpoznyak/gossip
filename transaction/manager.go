@@ -6,10 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/stefankopieczek/gossip/base"
-	"github.com/stefankopieczek/gossip/log"
-	"github.com/stefankopieczek/gossip/timing"
-	"github.com/stefankopieczek/gossip/transport"
+	"github.com/dpoznyak/gossip/base"
+	"github.com/dpoznyak/gossip/log"
+	"github.com/dpoznyak/gossip/timing"
+	"github.com/dpoznyak/gossip/transport"
 )
 
 var (

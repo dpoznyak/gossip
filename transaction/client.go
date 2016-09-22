@@ -1,10 +1,13 @@
 package transaction
 
 import (
+	"time"
+
 	"github.com/discoviking/fsm"
-	"github.com/stefankopieczek/gossip/base"
-	"github.com/stefankopieczek/gossip/log"
-	"github.com/stefankopieczek/gossip/timing"
+	"github.com/dpoznyak/gossip/base"
+	"github.com/dpoznyak/gossip/log"
+
+	"github.com/dpoznyak/gossip/timing"
 )
 
 // SIP Client Transaction FSM
