@@ -61,7 +61,7 @@ var defaultHeaderParsers map[string]HeaderParser = map[string]HeaderParser{
 	//"via":            parseViaHeader,
 	//"v":              parseViaHeader,
 	//"max-forwards":   parseMaxForwards,
-	//"content-length": parseContentLength,
+	"content-length": parseContentLength,
 	//"l":              parseContentLength,
 }
 
