@@ -49,22 +49,20 @@ type Parser interface {
 type HeaderParser func(headerName string, headerData string) (
 	headers []base.SipHeader, err error)
 
-func defaultHeaderParsers() map[string]HeaderParser {
-	return map[string]HeaderParser{
-		"to":             parseAddressHeader,
-		"t":              parseAddressHeader,
-		"from":           parseAddressHeader,
-		"f":              parseAddressHeader,
-		"contact":        parseAddressHeader,
-		"m":              parseAddressHeader,
-		"call-id":        parseCallId,
-		"cseq":           parseCSeq,
-		"via":            parseViaHeader,
-		"v":              parseViaHeader,
-		"max-forwards":   parseMaxForwards,
-		"content-length": parseContentLength,
-		"l":              parseContentLength,
-	}
+var defaultHeaderParsers map[string]HeaderParser = map[string]HeaderParser{
+	//"to":             parseAddressHeader,
+	//"t":              parseAddressHeader,
+	//"from":           parseAddressHeader,
+	//"f":              parseAddressHeader,
+	//"contact":        parseAddressHeader,
+	//"m":              parseAddressHeader,
+	//"call-id":        parseCallId,
+	"cseq": parseCSeq,
+	//"via":            parseViaHeader,
+	//"v":              parseViaHeader,
+	//"max-forwards":   parseMaxForwards,
+	//"content-length": parseContentLength,
+	//"l":              parseContentLength,
 }
 
 // Parse a SIP message by creating a parser on the fly.
@@ -105,10 +103,7 @@ func NewParser(output chan<- base.SipMessage, errs chan<- error, exit chan<- str
 	p := parser{streamed: streamed}
 
 	// Configure the parser with the standard set of header parsers.
-	p.headerParsers = make(map[string]HeaderParser)
-	for headerName, headerParser := range defaultHeaderParsers() {
-		p.SetHeaderParser(headerName, headerParser)
-	}
+	p.headerParsers = defaultHeaderParsers
 
 	p.output = output
 	p.errs = errs
